@@ -316,6 +316,108 @@ Testing a function
     - doctest: a  simple way of including tests in a doc-string of a function
 
 ---
+## Doctest
+
+* Simple test cases can be provided as part of the documentation string
+
+* Cut and paste an interactive session known to give true result
+
+* The doctest module executes the example from the interactive session as a test case
+* Test on string output and not values - small changes in formatting will case tests to fail
+
+---
+
+## Example
+```
+    #calculate.py
+    def add(a, b):
+        &#34;&#34;&#34;Return sum of two arguments
+        &gt;&gt;&gt; add(1, 1) #doctest: +SKIP
+        2
+        &gt;&gt;&gt;
+        &#34;&#34;&#34;
+        return a + b
+
+    def sub(a, b):
+        &#34;&#34;&#34;Return difference of two arguments
+        &gt;&gt;&gt; sub(1, 1) #doctest: +SKIP
+        0
+        &#34;&#34;&#34;
+        return a + b
+
+```
+
+can you see the bug?
+
+---
+
+## Running doctest
+At the end of the file
+
+```    
+    if __name__ == &#34;__main__&#34;:
+        import doctest
+        doctest.testmod()
+```
+
+On the command line
+
+```
+    $ python calculate.py
+```
+* All code in the file is executed
+    * Functions are defined
+    * `__name__ == &#34;__main__&#34;` evaluates to `True`
+    * Test are run
+
+---
+### The output
+``` 
+    $ python calculate.py
+    **********************************************************************
+    File &#34;calculate.py&#34;, line 14, in __main__.sub
+    Failed example:
+        sub(1, 1)
+    Expected:
+        0
+    Got:
+        2
+    **********************************************************************
+    1 items had failures:
+       1 of   1 in __main__.sub
+    ***Test Failed*** 1 failures.
+```
+---
+
+Correct the bug
+```
+        return a + b -&gt; return a - b
+```
+Rerun
+
+```
+    $ python calculate.py
+    $
+```
+silent - all ok
+
+---
+
+## Conclusion - doctests
+
+* Very easy to include testning into your code
+
+* The test serves as documentation as well 
+
+* Typically tests only one aspect of the function
+
+* But could clutter your code and may not be the best for extensive testing
+
+* Extensive testing is best separated from production code
+
+* More information on http://docs.python.org/library/doctest
+
+---
 
 ## Pytest
 
