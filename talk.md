@@ -290,7 +290,28 @@ silent - all ok
 * It couples to the python debugger
 
 ---
+## Installing Pytest
 
+As Pytest is not part of the standard library it has to be installed from the
+Python Packaging index (pypi). It is recommended to install external software in a
+*virtual environment* associated with each project, to avoid potential
+conflicts between different projects.
+
+
+Create and activate a virtual environment
+```
+$ python3 -m venv myenv
+$ source myenv/bin/activate
+```
+Install external libraries into the virtual environment
+```
+(myenv) $ pip install pytest
+(myenv) $ pip install pytest-cov # for coverage
+```
+
+Now you are ready to go
+
+---
 ## Example
 
 
@@ -373,6 +394,13 @@ my_math.py .                                                             [100%]
 =========================== 1 passed in 0.00 seconds ===========================
 ```
 
+Note: an equivalent way of invoking pytest is with
+```
+$ python3 -m pytest my_math.py
+```
+A little more to write but safer, as it may happen that pytest is not installed
+as an independent program or that the pytest used is linked with a different
+python version.
 
 ---
 
