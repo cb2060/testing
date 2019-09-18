@@ -306,7 +306,7 @@ $ source myenv/bin/activate
 
 On windows
 ```
-myenv\Scripts\activate.bat
+C:\>myenv\Scripts\activate
 ```
 
 
