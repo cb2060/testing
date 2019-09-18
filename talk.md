@@ -303,6 +303,13 @@ Create and activate a virtual environment
 $ python3 -m venv myenv
 $ source myenv/bin/activate
 ```
+
+On windows
+```
+myenv\Scripts\activate.bat
+```
+
+
 Install external libraries into the virtual environment
 ```
 (myenv) $ pip install pytest
