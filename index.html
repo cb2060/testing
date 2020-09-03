@@ -570,6 +570,31 @@ python version.
 
 ---
 
+### Leap year test with parameterization
+
+~~~
+from leap import is_leap_year
+import pytest
+
+@pytest.mark.parametrize(
+     &#34;value, expected&#34;,
+     [
+        (2000, True),
+        (1999, False),
+        (1998, False),
+        (1996, True),
+        (1900, False),
+        (1800, False),
+        (1600, True),
+     ]
+)
+def test_leap_year(value, expected):
+    assert is_leap_year(value) == expected
+
+~~~
+
+---
+
 ## Test coverage
 
 * Coverage is a measure how much of your code is executed by tests
