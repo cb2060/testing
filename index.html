@@ -184,7 +184,7 @@ As a result of taking this module you will be able to
 All testing is based on the `assert` statement
 
 ```python
-&gt;&gt;&gt; assert ...                                                                            #doctest: +SKIP
+&gt;&gt;&gt; assert ...                                                                            
 ```
 
 * The `assert` command
@@ -225,35 +225,27 @@ Same tools are used for both cases
     - to compare actual vs expected result
 
 ```python
-&gt;&gt;&gt; def test_slash_join():
-...    assert slash_join_strings(&#39;abc&#39;, &#39;def&#39;) == &#39;abc/def&#39;
+&gt;&gt;&gt; def test_join():
+...    assert join_strings(&#39;abc&#39;, &#39;def&#39;) == &#39;abc def&#39;
+...    assert join_strings(&#39;abc&#39;, &#39;def&#39;, separator=&#39;/&#39;) == &#39;abc/def&#39;
 
 ```
+
+--
 
 ```python
-&gt;&gt;&gt; def slash_join_strings(s1, s2):
-...    return &#34;/&#34;.join((s1, s2))
+&gt;&gt;&gt; def join_strings(s1, s2, separator=&#39; &#39;):
+...    return separator.join((s1, s2))
 
 ```
 
+~~~python
+&gt;&gt;&gt; test_join()
 
+~~~
 
-&lt;!--
-```
-&gt;&gt;&gt; test_slash_join()
+--
 
-```
---&gt;
-
-&lt;!--
-note explicit naming
-
-in terminal solve
-e.g.
-
-execute by hand first
-then with pytest
---&gt;
 
 * Several test functions may be collected in a file
 * A test *suite* is a collection of test files.
@@ -328,22 +320,33 @@ Testing a function
 ---
 
 ## Example
+&lt;!--
 ```
-    #calculate.py
-    def add(a, b):
-        &#34;&#34;&#34;Return sum of two arguments
-        &gt;&gt;&gt; add(1, 1) #doctest: +SKIP
-        2
-        &gt;&gt;&gt;
-        &#34;&#34;&#34;
-        return a + b
+&gt;&gt;&gt; from calculate import add, sub
 
-    def sub(a, b):
-        &#34;&#34;&#34;Return difference of two arguments
-        &gt;&gt;&gt; sub(1, 1) #doctest: +SKIP
-        0
-        &#34;&#34;&#34;
-        return a + b
+```
+--&gt;
+
+```
+#calculate.py
+def add(a, b):
+    &#34;&#34;&#34;
+    Return sum of two arguments
+
+    &gt;&gt;&gt; add(1, 1)
+    2
+    &gt;&gt;&gt;
+    &#34;&#34;&#34;
+    return a + b
+
+def sub(a, b):
+    &#34;&#34;&#34;
+    Return difference of two arguments
+
+    &gt;&gt;&gt; sub(1, 1) 
+    0
+    &#34;&#34;&#34;
+    return a + b
 
 ```
 
@@ -352,52 +355,35 @@ can you see the bug?
 ---
 
 ## Running doctest
-At the end of the file
 
-```    
-    if __name__ == &#34;__main__&#34;:
-        import doctest
-        doctest.testmod()
-```
-
-On the command line
-
-```
-    $ python calculate.py
-```
-* All code in the file is executed
-    * Functions are defined
-    * `__name__ == &#34;__main__&#34;` evaluates to `True`
-    * Test are run
-
----
 ### The output
+
 ``` 
-    $ python calculate.py
-    **********************************************************************
-    File &#34;calculate.py&#34;, line 14, in __main__.sub
-    Failed example:
-        sub(1, 1)
-    Expected:
-        0
-    Got:
-        2
-    **********************************************************************
-    1 items had failures:
-       1 of   1 in __main__.sub
-    ***Test Failed*** 1 failures.
+$ python -m doctest calculate.py
+**********************************************************************
+File &#34;calculate.py&#34;, line 14, in __main__.sub
+Failed example:
+    sub(1, 1)
+Expected:
+    0
+Got:
+    2
+**********************************************************************
+1 items had failures:
+   1 of   1 in __main__.sub
+***Test Failed*** 1 failures.
 ```
 ---
 
 Correct the bug
 ```
-        return a + b -&gt; return a - b
+    return a + b -&gt; return a - b
 ```
 Rerun
 
 ```
-    $ python calculate.py
-    $
+$ python calculate.py
+$
 ```
 silent - all ok
 
@@ -460,13 +446,6 @@ Now you are ready to go
 ---
 ## Example
 
-
-&lt;!--
-```
-&gt;&gt;&gt; from my import *
-
-```
---&gt;
 
 Consider
 
@@ -602,6 +581,7 @@ def test_leap_year(value, expected):
 * Guides developer where bugs may hide
 
 How it works (pytest)
+
 * Summary
 
 ```
@@ -609,6 +589,7 @@ C:\Users\...&gt; pytest test_my.py --cov my
 ```
 
 * Line info
+
 ```
 C:\Users\...&gt; pytest test_my.py --cov my --cov-report=term-missing
 ```

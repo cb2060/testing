@@ -86,35 +86,27 @@ Same tools are used for both cases
     - to compare actual vs expected result
 
 ```python
->>> def test_slash_join():
-...    assert slash_join_strings('abc', 'def') == 'abc/def'
+>>> def test_join():
+...    assert join_strings('abc', 'def') == 'abc def'
+...    assert join_strings('abc', 'def', separator='/') == 'abc/def'
 
 ```
+
+--
 
 ```python
->>> def slash_join_strings(s1, s2):
-...    return "/".join((s1, s2))
+>>> def join_strings(s1, s2, separator=' '):
+...    return separator.join((s1, s2))
 
 ```
 
+~~~python
+>>> test_join()
 
+~~~
 
-<!--
-```
->>> test_slash_join()
+--
 
-```
--->
-
-<!--
-note explicit naming
-
-in terminal solve
-e.g.
-
-execute by hand first
-then with pytest
--->
 
 * Several test functions may be collected in a file
 * A test *suite* is a collection of test files.
@@ -189,22 +181,33 @@ Testing a function
 ---
 
 ## Example
+<!--
 ```
-    #calculate.py
-    def add(a, b):
-        """Return sum of two arguments
-        >>> add(1, 1) #doctest: +SKIP
-        2
-        >>>
-        """
-        return a + b
+>>> from calculate import add, sub
 
-    def sub(a, b):
-        """Return difference of two arguments
-        >>> sub(1, 1) #doctest: +SKIP
-        0
-        """
-        return a + b
+```
+-->
+
+```
+#calculate.py
+def add(a, b):
+    """
+    Return sum of two arguments
+
+    >>> add(1, 1)
+    2
+    >>>
+    """
+    return a + b
+
+def sub(a, b):
+    """
+    Return difference of two arguments
+
+    >>> sub(1, 1) #doctest: +SKIP
+    0
+    """
+    return a + b
 
 ```
 
@@ -213,52 +216,35 @@ can you see the bug?
 ---
 
 ## Running doctest
-At the end of the file
 
-```    
-    if __name__ == "__main__":
-        import doctest
-        doctest.testmod()
-```
-
-On the command line
-
-```
-    $ python calculate.py
-```
-* All code in the file is executed
-    * Functions are defined
-    * `__name__ == "__main__"` evaluates to `True`
-    * Test are run
-
----
 ### The output
+
 ``` 
-    $ python calculate.py
-    **********************************************************************
-    File "calculate.py", line 14, in __main__.sub
-    Failed example:
-        sub(1, 1)
-    Expected:
-        0
-    Got:
-        2
-    **********************************************************************
-    1 items had failures:
-       1 of   1 in __main__.sub
-    ***Test Failed*** 1 failures.
+$ python -m doctest calculate.py
+**********************************************************************
+File "calculate.py", line 14, in __main__.sub
+Failed example:
+    sub(1, 1)
+Expected:
+    0
+Got:
+    2
+**********************************************************************
+1 items had failures:
+   1 of   1 in __main__.sub
+***Test Failed*** 1 failures.
 ```
 ---
 
 Correct the bug
 ```
-        return a + b -> return a - b
+    return a + b -> return a - b
 ```
 Rerun
 
 ```
-    $ python calculate.py
-    $
+$ python calculate.py
+$
 ```
 silent - all ok
 
@@ -321,13 +307,6 @@ Now you are ready to go
 ---
 ## Example
 
-
-<!--
-```
->>> from my import *
-
-```
--->
 
 Consider
 
@@ -463,22 +442,22 @@ def test_leap_year(value, expected):
 * Guides developer where bugs may hide
 
 How it works (pytest)
-* Summary
 
+* Summary
 ```
-C:\Users\...> pytest test_my.py --cov my
+$ pytest test_my.py --cov my
 ```
 
 * Line info
 ```
-C:\Users\...> pytest test_my.py --cov my --cov-report=term-missing
+$ pytest test_my.py --cov my --cov-report=term-missing
 ```
 ---
 
 * HTML report
 
 ```
-C:\Users\...> pytest test_my.py --cov my --cov-report=html
+$ pytest test_my.py --cov my --cov-report=html
 ```
 Open in browser
 
@@ -499,7 +478,7 @@ def setup_function():
 def setup_module():
     print('\nsetup_module')
 
-def teardown_function():
+df teardown_function():
     print('   teardown_function')
 
 def teardown_module():
@@ -538,228 +517,33 @@ test_1.py::test_g
     TEARDOWN M _Module__pytest_setup_module
 ```
 ---
+
 `test_2.py`
 ```
+import pytest
+
 
 @pytest.fixture
-def before():
-    print('      before')
-    yield None
-    print('      after')
+def initialize():
+    print('\nsetting up')
+    yield 'some value'
+    print('\nclosing down')
 
-@pytest.fixture(params=[1,2])
-def return_value(request):
-    print('      return_value')
-    return 3.14*request.param
 
-def test_this(before):
-    print('            ', end='')
-
-def test_that(return_value):
-    print('            ', end='')
-    print(return_value, end='')
+def test_this(initialize):
+    print(initialize)
 
 ```
 ```
-C:\Users\...> pytest test_2.py -vs
+$ pytest test_2.py -vs
 ...
-collected 3 items                                                            
+collecting ... collected 1 item
 
-test_2.py::::test_this       before   
-            PASSED      after         
-
-test_2.py::::test_that[1]       return_value                                 
-            3.14PASSED                
-test_2.py::::test_that[2]       return_value                                 
-            6.28PASSED                
-
+test_2.py::test_this 
+setting up
+some value
+PASSED
+closing down
+============================== 1 passed in 0.00s ===============================
 
 ```
----
-
-
-
-
-## The unittest module
-
-
-
-* A unit test module exist for this purpose: `unittest`
-
-* The tests can be written in a separate file
-
-* One defines a class which is a subclass of `unittest.TestCase`
-
-* The unittest framework executes and checks everything that begins with test
-
-* Part of the standard library and provides very portable testing
-
----
-
-### Howto
-
-* Define a class with a name beginning with ``Test`` as a subclass of ``unittest.TestCase``
-
-* Define class methods that begin with ``test`` using the test functions of the ``unittest`` module
-
-* Optionally one may define a ``setUp`` and a ``tearDown`` method which are run before and after every test.
-
-* In the main section run ``unittest.main()``
-
-```
-    class TestSomething(unittest.TestCase):
-        ...
-        def test_this(self):
-            ...
-        def test_that(self):
-            ...
-    if __name__ == "__main__":
-        unittest.main()
-```
-
----
-
-### Example
-
-```python
-    #test_calculate.py
-    import unittest
-    import calculate
-
-    class TestCalculate(unittest.TestCase):
-        
-        def testadd(self):
-            res = calculate.add(1, 1)
-            self.assertEqual(res, 2)
-
-        def testsub(self):
-            res = calculate.sub(1, 1)
-            self.assertEqual(res, 0)
-
-    if __name__ == "__main__":
-        unittest.main()
-
-```
-compare  with
-```python
-#my_math.py
-def test_add():
-    assert calculate.add(1, 1) == 1
-
-def test_sub():
-    assert calculate.sub(1, 1) == 0
-
-```
----
-
-### Run test
-```bash
-    $ python test_calculate.py
-    .F
-    ======================================================================
-    FAIL: testsub (__main__.TestCalculate)
-    ----------------------------------------------------------------------
-    Traceback (most recent call last):
-      File "test_calculate.py", line 18, in testsub
-        self.assertEqual(res, 0)
-    AssertionError: 2 != 0
-
-    ----------------------------------------------------------------------
-    Ran 2 tests in 0.001s
-
-    FAILED (failures=1)
-```
----
-
-### Run verbose test
-
-```
-    $ python test_calculate.py -v
-    testadd (__main__.TestCalculate) ... ok
-    testsub (__main__.TestCalculate) ... FAIL
-
-    ======================================================================
-    FAIL: testsub (__main__.TestCalculate)
-    ----------------------------------------------------------------------
-    Traceback (most recent call last):
-      File "test_calculate.py", line 18, in testsub
-        self.assertEqual(res, 0)
-    AssertionError: 2 != 0
-
-    ----------------------------------------------------------------------
-    Ran 2 tests in 0.001s
-
-    FAILED (failures=1)
-```
-
----
-
-
-### Fix the bug
-```
-    return a + b -> return a - b
-```
---
-
-### Rerun test
-```
-    $ python test_calculate.py -v
-    testadd (__main__.TestCalculate) ... ok
-    testsub (__main__.TestCalculate) ... ok
-
-----------------------------------------------------------------------
-Ran 2 tests in 0.000s
-
-OK
-```
-
----
-## Other helper functions tests
-
-* ``assertNotEqual``
-
-* ``assertTrue``
-
-* ``assertFalse``
-
-* ``assertAlmostEqual``
-    - Most numerical testing is within a threshold, e.g.
-
-```
-     def testdiv(self):
-         res = calculate.div(1., 3)
-         self.assertAlmostEqual(res, 0.333333, 6)
-```
-
-* see also http://docs.python.org/3/library/unittest.html 
-
----
-
-### Summary
-
-* The `pytest` library is the most modern testing framework for Python
-    - Easy to get started with simple test functions
-* `nose` is a similar older library
-* The standard library contains `unittest` library
-    - Requires knowledge of classes to code your tests, 
-* Fine to ``doctest`` for small illustrations
-
----
-
-### Final tip
-
-* Embrace the TDD philosophy, write test before code.
-* Document code and modules - be kind to your future self.
-* For good programming style, consider PEP 8, http://www.python.org/dev/peps/pep-0008/
-* Be obsessive about testing
-* If your test code is larger that your production code, you are on the right track
-* This takes initially a little more time but the rewards in the long run are huge
-
-### Links
-
-* http://pythontesting.net
-* http://mathieu.agopian.info/presentations/2015_06_djangocon_europe
-* http://katyhuff.github.io/python-testing
-* <a href="https://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Dstripbooks&field-keywords=tdd&rh=n%3A283155%2Ck%3Atdd">Amazon search:"TDD"</a> > 100 books
-* http://pyvideo.org: <tt>About 80 results</tt>
-
